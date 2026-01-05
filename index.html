@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>External App Demo (React)</title>
+</head>
+
+<body>
+  <div style="padding: 40px; max-width: 800px; margin: 0 auto; font-family: sans-serif;">
+    <h1>External Application</h1>
+    <p>This page mimics an LMS loading the React-based Proctoring Widget.</p>
+    <button id="start-btn" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+      Start Exam
+    </button>
+  </div>
+
+  <!-- 
+      In development, we load Vite client and main entry.
+      This simulates how an external app invokes the script.
+      Realistically, you'd bundle this or proxy it.
+    -->
+  <script type="module">
+    import { injectIntoGlobalHook } from "/@react-refresh";
+    injectIntoGlobalHook(window);
+    window.$RefreshReg$ = () => { };
+    window.$RefreshSig$ = () => (type) => type;
+    window.__vite_plugin_react_preamble_installed__ = true;
+  </script>
+  <script type="module" src="/@vite/client"></script>
+  <script type="module" src="/src/main.jsx"></script>
+
+  <script>
+    document.getElementById('start-btn').addEventListener('click', () => {
+      if (window.Proctor) {
+        window.Proctor.init({ userId: 'Candidate-001' });
+      } else {
+        console.warn('Proctor widget not ready yet');
+        // In dev, it might take a moment if modules are loading
+        setTimeout(() => {
+          if (window.Proctor) window.Proctor.init({ userId: 'Candidate-001' });
+        }, 1000);
+      }
+    });
+  </script>
+</body>
+
+</html>
